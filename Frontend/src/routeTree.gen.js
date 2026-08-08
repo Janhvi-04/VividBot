@@ -23,6 +23,3 @@ const rootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes()
-
-import { getRouter } from './router.tsx'
-import { startInstance } from './start.ts'

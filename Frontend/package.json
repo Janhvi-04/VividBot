@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "node -e \"const fs=require('fs');const tsFile=require('path').join(process.cwd(),'src/routeTree.gen.ts');if(fs.existsSync(tsFile))fs.unlinkSync(tsFile);\" && vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
@@ -62,7 +62,6 @@
     "tailwindcss": "^4.2.1",
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
-    "vite-tsconfig-paths": "^6.0.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {

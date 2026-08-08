@@ -5,11 +5,36 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+import fs from "fs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.js (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  tanstackRouter: {
+    generatedRouteTree: "./src/routeTree.gen.js",
+  },
+  vite: {
+    plugins: [
+      {
+        name: "delete-ts-route-tree",
+        buildStart() {
+          const tsFile = resolve(__dirname, "./src/routeTree.gen.ts");
+          if (fs.existsSync(tsFile)) {
+            fs.unlinkSync(tsFile);
+          }
+        },
+      },
+    ],
+  },
+  resolve: {
+    tsconfigPaths: true,
   },
 });

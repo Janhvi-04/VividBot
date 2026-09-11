@@ -16,7 +16,6 @@ app.use('/api/auth',AuthRoutes);
 app.use('/api/activities',activityRoutes)
 
 const gemini=new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
-const grok=new OpenAI({apiKey: process.env.XAI_API_KEY, baseURL: "https://api.x.ai/v1"});
 
 async function callGeminiOnly(prompt) {
     try {
@@ -33,21 +32,7 @@ async function callGeminiOnly(prompt) {
            error.rateLimit = true;
            throw error;
        }
-       try{
-        const completion=await grok.chat.completions.create({
-            model:"grok-4.5",
-            messages:[{role:"user",content:prompt}],
-        })
-        return completion.choices[0].message.content
-       } catch(grokError) {
-        console.error("Grok fallback error:",grokError);
-        // Check for rate limit errors
-        if(grokError.message.includes('rate limit') || grokError.message.includes('quota') || grokError.message.includes('429')) {
-            const error = new Error("Rate limit exceeded");
-            error.rateLimit = true;
-            throw error;
-        }
-       }
+       throw geminiError;
     }
 }
 app.post("/api/puzzle/generate",async(req,res)=>{

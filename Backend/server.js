@@ -224,6 +224,9 @@ mongoose.connect(process.env.MONGO_URL)
 app.get('/api/test',(req,res)=>{
     res.json({message: "Backend is connected successfully."});
 })
+app.get('/', (req, res) => {
+    res.json({ message: "VividBot API Server is running!" });
+});
 app.get('/dashboard', (req, res) => {
     res.json({ message: "VividBot API Server is running!" });
 });

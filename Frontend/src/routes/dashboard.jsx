@@ -57,16 +57,16 @@ const categories = [
 function CategoryCard({icons: [A, B], title, sub, path}) {
   const navigate=useNavigate();
   return (
-    <article onClick={()=>navigate({to:path})} className="group cursor-pointer relative rounded-3xl border border-white/20 bg-white/10 p-6 shadow-sm backdrop-blur-[1px] transition-all duration-300 hover:bg-white/20 hover:scale-[1.01]">
+    <article onClick={()=>navigate({to:path})} className="group cursor-pointer relative rounded-3xl border border-white/20 bg-white/10 p-5 sm:p-6 shadow-sm backdrop-blur-[1px] transition-all duration-300 hover:bg-white/20 hover:scale-[1.01]">
       <div className="relative">
         <div className="flex items-end gap-3 text-foreground/85 transition-transform duration-300 group-hover:translate-y-[-2px]">
-          <A className="h-11 w-11" strokeWidth={1.25} />
-          <B className="h-11 w-11" strokeWidth={1.25} />
+          <A className="h-9 w-9 sm:h-11 sm:w-11" strokeWidth={1.25} />
+          <B className="h-9 w-9 sm:h-11 sm:w-11" strokeWidth={1.25} />
         </div>
-        <h2 className="mt-3 font-body text-2xl font-normal leading-tight text-foreground sm:text-3xl">
+        <h2 className="mt-3 font-body text-xl sm:text-2xl lg:text-3xl font-normal leading-tight text-foreground">
           {title}
         </h2>
-        <p className="font-body text-2xl font-light leading-tight text-foreground/85 sm:text-3xl">
+        <p className="font-body text-lg sm:text-2xl lg:text-3xl font-light leading-tight text-foreground/85">
           {sub}
         </p>
       </div>
@@ -105,7 +105,7 @@ function Dashboard() {
   }, []);
     
   return (
-    <main className="relative min-h-screen bg-background">
+    <main className="relative min-h-screen bg-background overflow-x-hidden">
       <img
         src={watercolor}
         alt=""
@@ -115,30 +115,34 @@ function Dashboard() {
         className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-70"
       />
 
-      <div className="relative mx-auto w-full max-w-7xl px-5 py-8 sm:px-10 sm:py-12">
+      <div className="relative mx-auto w-full max-w-7xl px-4 py-6 sm:px-10 sm:py-12">
         {
           <>
             {/* Header */}
-            <header className="flex flex-wrap items-center gap-4">
-              <h1 className="font-display text-3xl tracking-wide text-foreground sm:text-4xl">
-                VividBot
-              </h1>
-              <img
-                src={sparkBot}
-                alt="VividBot mascot"
-                width={512}
-                height={512}
-                className="h-11 w-11 object-contain"
-              />
-              <p className="font-ui text-sm leading-tight text-foreground/80">
+            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl tracking-wide text-foreground">
+                  VividBot
+                </h1>
+                <img
+                  src={sparkBot}
+                  alt="VividBot mascot"
+                  width={512}
+                  height={512}
+                  className="h-9 w-9 sm:h-11 sm:w-11 object-contain"
+                />
+              </div>
+              
+              <p className="font-ui text-xs sm:text-sm leading-tight text-foreground/80">
                 Welcome, {user?.name || "Friend"}. What shall we discover today?
-                <br/>
-                A new day for growth.
+                <br className="hidden sm:inline"/>
+                {" "}A new day for growth.
               </p>
-              <div className="ml-auto flex items-center gap-3">
+
+              <div className="flex items-center">
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/50 px-3 py-1.5 text-xs font-medium text-gray-700 transition cursor-pointer hover:text-black"
+                  className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/50 px-3.5 py-1.5 text-xs font-medium text-gray-700 transition cursor-pointer hover:text-black shadow-sm"
                 >
                   <DoorOpen className="h-4 w-4" />
                   Escape !
@@ -147,17 +151,17 @@ function Dashboard() {
             </header>
 
             {/* Body */}
-            <div className="mt-17 grid gap-6 sm:grid-cols-2">
+            <div className="mt-8 sm:mt-12 lg:mt-17 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
               {categories.map((cat) => (
                 <CategoryCard key={cat.title} {...cat} />
               ))}
             </div>
 
             {/* History */}
-            <div className="mt-10 text-center">
+            <div className="mt-8 sm:mt-10 text-center">
               <button 
                 onClick={()=>navigate({to:"/history"})}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-100/20 backdrop-blur-md border border-amber-200/50 text-amber-900 font-medium text-sm hover:bg-amber-100/40 transition cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-100/20 backdrop-blur-md border border-amber-200/50 text-amber-900 font-medium text-sm hover:bg-amber-100/40 transition cursor-pointer shadow-sm"
               >
                 <Clock className="h-4 w-4" strokeWidth={1.25} />
                 View Your History

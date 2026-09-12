@@ -82,15 +82,15 @@ function LoginPage() {
     }
   return (
     <div 
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 bg-contain bg-center bg-no-repeat bg-[#ffffff]"
+      className="relative flex min-h-screen items-center justify-center overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-cover bg-center bg-no-repeat bg-[#ffffff]"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       {/* Form Card Positioned precisely inside the browser window graphic */}
-      <div className="relative z-10 w-full max-w-sm mt-1">
+      <div className="relative z-10 w-full max-w-sm my-auto bg-white/80 backdrop-blur-md sm:bg-transparent sm:backdrop-blur-none p-6 sm:p-0 rounded-3xl shadow-xl sm:shadow-none">
         <h2 className="mb-2 text-center font-serif text-2xl font-medium tracking-wide text-gray-800">
           VividBot Access
         </h2>
-        <p  className="text-center mb-4 sm:mb-10">Come let's open your mind's window.</p>
+        <p className="text-center mb-4 sm:mb-10 text-sm sm:text-base text-gray-600">Come let's open your mind's window.</p>
         {error && (
           <div className="mb-3 rounded-xl bg-red-100 p-2.5 text-center text-xs font-medium text-red-700">
             {error}
@@ -114,7 +114,7 @@ function LoginPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm text-gray-800 text-base placeholder-gray-400 transition focus:border-[#E7CBA0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E7CBA0]"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm sm:text-base text-gray-800 placeholder-gray-400 transition focus:border-[#E7CBA0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E7CBA0]"
               />
             </div>
 
@@ -128,7 +128,7 @@ function LoginPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-400 transition focus:border-[#E7CBA0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E7CBA0]"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm sm:text-base text-gray-800 placeholder-gray-400 transition focus:border-[#E7CBA0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E7CBA0]"
               />
             </div>
 
@@ -142,9 +142,9 @@ function LoginPage() {
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <p className="text-center text-xs text-gray-600">
+            <p className="text-center text-xs sm:text-sm text-gray-600">
               Enter the 4-digit code sent to{" "}
-              <span className="font-semibold text-gray-800">{identifier}</span>
+              <span className="font-semibold text-gray-800 break-all">{identifier}</span>
             </p>
 
             <div>

@@ -203,9 +203,26 @@ app.post("/api/mindfulness/generate-task",async(req,res)=>{
     }
 })
 
-mongoose.connect(process.env.MONGO_URL)
-.then(()=>console.log("Connected to MongoDB successfully!"))
-.catch((err)=>console.error("MongoDB connection error: ",err))
+let cachedConnection = null;
+async function connectDB() {
+    if (cachedConnection && mongoose.connection.readyState === 1) {
+        return cachedConnection;
+    }
+    cachedConnection = await mongoose.connect(process.env.MONGO_URL, {
+        serverSelectionTimeoutMS: 5000,
+    });
+    console.log("Connected to MongoDB successfully!");
+    return cachedConnection;
+}
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error("Database connection error:", err);
+        res.status(500).json({ success: false, error: "Database connection failed" });
+    }
+});
 app.get('/api/test',(req,res)=>{
     res.json({message: "Backend is connected successfully."});
 })

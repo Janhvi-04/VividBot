@@ -22,8 +22,12 @@ function CuriosityQuestPage() {
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [loading, setLoading] = useState(false);
   const [quest, setQuest] = useState(null);
-  const [displayedPrompt, setDisplayedPrompt] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [diplayPedrompt,setDisplayedPrompt]=useState("");
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {
     if (!quest?.prompt) {
       setDisplayedPrompt("");
@@ -44,6 +48,7 @@ function CuriosityQuestPage() {
 
     return () => clearInterval(timer);
   }, [quest]);
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
   const logActivity = async (activityType, title, details = {}) => {
     try {
@@ -76,6 +81,7 @@ function CuriosityQuestPage() {
       const data = await response.json();
       if (data.success) {
         setQuest(data.quest);
+        // Log activity when user explores a domain with details
         logActivity('curiosity-quest', `Explored ${domain}`, {
           domain: domain,
           questTitle: data.quest?.title,
@@ -102,17 +108,15 @@ function CuriosityQuestPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden flex flex-col justify-between p-4 sm:p-6">
+    <main className="relative min-h-screen overflow-hidden flex flex-col justify-between p-4 sm:p-6">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${bgImage})`,
         }}
       />
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] pointer-events-none" />
-      
-      {/* Header */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto flex items-center justify-between">
+      <div className="absolute inset-0 pointer-events-none" />
+      <div className="relative z-10 w-full max-w-full mx-auto mb-4 flex items-center justify-start">
         <button
           onClick={() => {
             if (selectedDomain) {
@@ -122,63 +126,68 @@ function CuriosityQuestPage() {
               navigate({ to: "/dashboard" });
             }
           }}
-          className="flex items-center justify-center w-9 h-9 cursor-pointer rounded-full text-white transition hover:bg-white/20 border border-white/20 bg-white/10 backdrop-blur-md shadow-sm"
+          className="flex items-center justify-center w-9 h-9 cursor-pointer rounded-full text-white transition hover:bg-white/20 border border-white/20"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <span className="text-xs sm:text-sm font-bold text-white tracking-widest uppercase drop-shadow-md">
+        <span className="flex text-center items-center justify-center w-full text-xs sm:text-sm font-bold text-white tracking-widest uppercase drop-shadow-md gap-2">
           Curiosity Quest
         </span>
-        <div className="w-9" /> {/* Spacer for centering */}
       </div>
 
-      {/* Subtitle / Prompt when no domain selected */}
       {!selectedDomain && (
-        <div className="relative z-10 w-full max-w-xl mx-auto text-center px-4 my-6">
-          <p className="text-sm sm:text-lg text-white/90 leading-relaxed font-medium drop-shadow">
-            Choose your domain of wonder to discover a fascinating fact or discovery...
-          </p>
+        <div className="relative z-10 w-full mx-auto text-center px-4 mt-7">
+            <p className="text-l sm:text-xl text-white mt-2 leading-relaxed">
+              Choose your domain of wonder to discover a fascinating fact or discovery...
+            </p>
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div className="relative z-10 flex-1 w-full max-w-3xl mx-auto flex flex-col items-center justify-center py-4">
-        {!selectedDomain ? (
-          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 px-2">
-            {domains.map((domain) => (
-              <button
-                key={domain}
-                onClick={() => handleSelectDomain(domain)}
-                className="group relative h-28 sm:h-36 w-full rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md p-3 text-white text-xs sm:text-sm font-medium transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:border-white/40 cursor-pointer shadow-xl flex flex-col items-center justify-center text-center overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="line-clamp-3 px-1 relative z-10">{domain}</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="w-full space-y-4 overflow-y-auto max-h-[75vh] px-2">
+      <div className="relative z-10 flex-1 w-full max-w-4xl mx-auto flex flex-col justify-center pb-4">
+          {!selectedDomain ? (
+            <div className="relative w-full h-[70vh] flex items-center justify-center">
+              {mounted && domains.map((domain, index) => {
+                const angle = (index / domains.length) * 2 * Math.PI;
+                const radiusX = 220; 
+                const radiusY = 175; 
+                const x = Math.cos(angle) * radiusX;
+                const y = Math.sin(angle) * radiusY;
+
+                return (
+                  <button
+                    key={domain}
+                    onClick={() => handleSelectDomain(domain)}
+                    style={{
+                      transform: `translate(${x}px, ${y}px)`,
+                    }}
+                    className="absolute z-30 w-28 h-28 sm:w-32 sm:h-32 rounded-full border border-white/20 p-2 text-white text-xs sm:text-sm font-medium transition hover:scale-110 cursor-pointer shadow-xl flex flex-col items-center justify-center text-center group"
+                  >
+                    <span className="line-clamp-2 px-1">{domain}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-1">
             {loading && !quest ? (
-              <div className="text-center text-white/80 py-12 text-sm italic">
-                On the way to discover facts...
-              </div>
+              <div className="text-center text-white/70 py-12">On the way to discover facts...</div>
             ) : (
-              <div className="rounded-2xl border border-white/30 bg-white/15 backdrop-blur-xl p-5 sm:p-8 text-slate-100 shadow-2xl">
-                <div className="flex items-center justify-between mb-4">
+              <div className="rounded-2xl border border-white/20 p-5 sm:p-6 text-slate-100 shadow-xl">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] sm:text-xs font-semibold text-amber-300 uppercase tracking-wider bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/30">
                     {quest?.type}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-xl font-bold text-white mb-3">
+                <h3 className="text-base sm:text-lg font-bold text-white mb-2">
                   {quest?.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-100 leading-relaxed font-serif italic whitespace-pre-wrap">
-                  {displayedPrompt}
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-serif italic">
+                  {quest?.prompt}
                 </p>
-              </div>
+              </div>        
             )}
           </div>
-        )}
+          )}
       </div>
     </main>
   );

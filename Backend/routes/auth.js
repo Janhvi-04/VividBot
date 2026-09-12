@@ -21,12 +21,26 @@ router.post('/send-otp',async(req,res)=>{
     try {
         const mailboxLayerApiKey = process.env.MAIL_BOX_LAYER;
         if (mailboxLayerApiKey) {
-            const apiResponse = await fetch(`https://apilayer.net/api/check?access_key=${mailboxLayerApiKey}&email=${encodeURIComponent(identifier)}`);
-            const data = await apiResponse.json();
-            if (!data.format_valid || !data.mx_found || !data.smtp_check) {
-                return res.status(400).json({ error: "This email address does not exist or cannot receive mail." });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s limit for MailboxLayer
+            
+            try {
+                const apiResponse = await fetch(`https://apilayer.net/api/check?access_key=${mailboxLayerApiKey}&email=${encodeURIComponent(identifier)}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                const data = await apiResponse.json();
+                if (!data.format_valid || !data.mx_found || !data.smtp_check) {
+                    return res.status(400).json({ error: "This email address does not exist or cannot receive mail." });
+                }
+            } catch (fetchErr) {
+                clearTimeout(timeoutId);
+                console.warn("MailboxLayer took too long, skipping validation check:", fetchErr.message);
+                // Optional: choose whether to block or let it pass if MailboxLayer lags
             }
+            
         }
+
         let user = await User.findOne({ identifier });
         if (!user) {
             user = new User({ identifier, name });

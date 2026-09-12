@@ -2,11 +2,32 @@ const express=require('express');
 const mongoose=require('mongoose');
 const cors=require('cors');
 require('dotenv').config();
+mongoose.set('bufferCommands',false);
 
 const app=express();
 app.use(cors());
 app.use(express.json());
 
+let cachedConnection = null;
+async function connectDB() {
+    if (cachedConnection && mongoose.connection.readyState === 1) {
+        return cachedConnection;
+    }
+    cachedConnection = await mongoose.connect(process.env.MONGO_URL, {
+        serverSelectionTimeoutMS: 5000,
+    });
+    console.log("Connected to MongoDB successfully!");
+    return cachedConnection;
+}
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error("Database connection middleware error:", err);
+        res.status(500).json({ success: false, error: "Database connection failed" });
+    }
+});
 const AuthRoutes=require('./routes/auth');
 const activityRoutes=require('./routes/activities')
 const { GoogleGenAI } = require('@google/genai');
@@ -203,17 +224,6 @@ app.post("/api/mindfulness/generate-task",async(req,res)=>{
     }
 })
 
-let cachedConnection = null;
-async function connectDB() {
-    if (cachedConnection && mongoose.connection.readyState === 1) {
-        return cachedConnection;
-    }
-    cachedConnection = await mongoose.connect(process.env.MONGO_URL, {
-        serverSelectionTimeoutMS: 5000,
-    });
-    console.log("Connected to MongoDB successfully!");
-    return cachedConnection;
-}
 app.use(async (req, res, next) => {
     try {
         await connectDB();

@@ -215,7 +215,8 @@ app.get('/', (req, res) => {
 app.get('/dashboard', (req, res) => {
     res.json({ message: "VividBot API Server is running!" });
 });
-const PORT=process.env.PORT || 5000;
-app.listen(PORT,()=>{
+//const PORT=process.env.PORT || 5000;
+/*app.listen(PORT,()=>{
     console.log(`Backend server running on port ${PORT}`);
-})
+})*/
+module.exports=app;

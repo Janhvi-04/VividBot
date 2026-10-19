@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Send, Play, Lightbulb } from "lucide-react";
 import { LogicPuzzleBackground } from "../components/logic-puzzle-background";
 import { useState, useEffect } from "react";
-import ReactMarkDown from "react-markdown";
 import { apiFetch } from "../utils/api";
 export const Route = createFileRoute("/logic-puzzles")({
   component: LogicPuzzlesPage,
@@ -230,11 +229,7 @@ function LogicPuzzlesPage() {
                         ? "bg-[#5B9BD5] text-white rounded-br-none"
                         : "bg-white/80 backdrop-blur-md border border-white/40 text-gray-900 rounded-bl-none"
                     }`}>
-                        {msg.sender === "user" ? (
-                          msg.text
-                        ) : (
-                          <ReactMarkDown>{msg.text}</ReactMarkDown>
-                        )}
+                        {msg.text}
                     </div>
                   </div>
                 ))}

@@ -62,9 +62,8 @@ app.post("/api/puzzle/generate",async(req,res)=>{
         let specificInstructions="";
         if(category.toLowerCase().includes("pattern")) {
             specificInstructions=`
-    - For "Pattern Sequence", provide a text-based description of the sequence and include 4 multiple-choice options.
-    - Add a "options" key as an array of 4 strings (e.g., ["A) 12", "B) 14", "C) 16", "D) 18"]).
-    - The "question" should clearly state the pattern and ask which option comes next.`;
+    - For "Pattern Sequence", provide a text-based description of the sequence.
+    - The "question" should clearly state the pattern and ask what comes next.`;
         } else if(category.toLowerCase().includes("equation")) {
             specificInstructions=`
     - For "Equation", provide a math or symbol-based balancing puzzle where missing numbers or symbols need to be solved.
@@ -75,6 +74,7 @@ app.post("/api/puzzle/generate",async(req,res)=>{
     - The "question" should specify the start word, end word, and instruct the user to provide the very next valid 1-letter-change word step.`;
         }
         const prompt=`Generate a unique and accurate puzzle for the category: "${category}". Ensure it has a mathematically or logically valid solution.
+    IMPORTANT: Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.
     Format your response strictly as JSON with the following keys:
     - "question": The text/description of the puzzle.
     - "id": A unique identifier or key for this puzzle instance.${specificInstructions}`;
@@ -92,7 +92,8 @@ app.post("/api/puzzle/generate",async(req,res)=>{
 app.post("/api/puzzle/hint",async(req,res)=>{
     try {
         const {question,category}=req.body;
-        const prompt=`For this ${category} puzzle: "${question}", provide a helpful, clever hint without giving away the direct answer. Keep it concise.`;
+        const prompt=`For this ${category} puzzle: "${question}", provide a helpful, clever hint without giving away the direct answer. Keep it concise.
+        IMPORTANT: Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.`;
         const hint=await callGeminiOnly(prompt);
         res.json({success:true,hint})
     } catch(error) {
@@ -111,7 +112,7 @@ app.post("/api/puzzle/verify",async(req,res)=>{
     
     Rules for evaluation:
     - "isCorrect": Set to true ONLY if the user's answer precisely solves or correctly answers the puzzle prompt. If it is wrong, incomplete, or gibberish, set it to false.
-    - "feedback": If correct, state clearly that it is correct. If incorrect, state clearly that it is wrong and provide the exact correct answer. Keep it strictly to 1-2 sentences with no extra conversational follow-up questions.
+    - "feedback": If correct, state clearly that it is correct. If incorrect, state clearly that it is wrong and provide the exact correct answer. Keep it strictly to 1-2 sentences with no extra conversational follow-up questions. Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.
     - "farewell": Leave this blank.
     Format your response strictly as JSON with these keys:
     - "isCorrect": boolean
@@ -131,8 +132,9 @@ app.post("/api/puzzle/verify",async(req,res)=>{
 app.post("/api/curiosity/fact", async (req, res) => {
     try {
         const { domain } = req.body;
-        const prompt = `Provide an interesting, lesser-known scientific or historical fact about the domain: "${domain}". 
-        Give it a short title and a description. Format your text with the title on the first line, followed by a blank line, followed by the description.`;
+        const prompt = `Provide an interesting, lesser-known scientific or historical fact about the domain: "${domain}".
+        Give it a short title and a description. Format your text with the title on the first line, followed by a blank line, followed by the description.
+        IMPORTANT: Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.`;
         const rawReply = await callGeminiOnly(prompt);
         const parts = rawReply ? rawReply.split("\n\n") : [];
         const title = parts[0] ? parts[0].replace(/^(Title:|#+)\s*/i, "").trim() : `The Secret of ${domain}`;
@@ -168,6 +170,7 @@ app.post("/api/snippets/generate-question", async (req, res) => {
         }
         const prompt = `Generate a unique, accurate learning challenge for a user with the persona: "${persona}".
             ${personaContext}
+            IMPORTANT: Do NOT use markdown formatting in the prompt (no asterisks, no bold with **, no italics with *). Use plain text only.
             Format your response strictly as JSON with the following keys:
             - "title": A short, catchy title for the challenge.
             - "prompt": The descriptive text or scenario presenting the problem (do NOT include the code here if it's a coding challenge).
@@ -188,6 +191,7 @@ app.post("/api/snippets/respond",async(req,res)=>{
     try {
         const {userInput,persona,currentQuestion}=req.body;
         const prompt=`You are a precise, strict AI evaluator. Evaluate the user's answer to this challenge: "${currentQuestion || 'General discussion'}".
+IMPORTANT: Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.
 User's Answer: "${userInput}"
 Instructions:
 - If the user's answer is correct, state clearly that it is correct. 
@@ -208,9 +212,10 @@ app.post("/api/mindfulness/generate-task",async(req,res)=>{
         if(!mood) {
             return res.status(400).json({success:false,error:"Mood is required"});
         }
-        const prompt=`Generate a micro-activity tailored for someone feeling ${mood}. 
+        const prompt=`Generate a micro-activity tailored for someone feeling ${mood}.
         Variety requirement: Mix it up. Sometimes you can suggest a breathing exercise or meditation, but actively include hands-on or mental tasks like physical stretching, quick workspace decluttering, rapid journaling prompts, or a short active distraction. Avoid repeating breathing exercises every single time.
-        Provide a catchy title, a short description of the steps, and an estimated duration. Return the response in JSON format with keys: title, description, duration.`;
+        Provide a catchy title, a short description of the steps, and an estimated duration. Return the response in JSON format with keys: title, description, duration.
+        IMPORTANT: Do NOT use markdown formatting (no asterisks, no bold with **, no italics with *). Use plain text only.`;
         const aiResponseText=await callGeminiOnly(prompt);
         const cleanedText = aiResponseText.replace(/```json\n?|\n?```/g, "").trim();
         const task = JSON.parse(cleanedText);

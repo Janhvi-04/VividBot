@@ -95,8 +95,11 @@ function HistoryPage() {
     }
   };
 
+  // Sort activities by timestamp in descending order (most recent first)
+  const sortedActivities = [...activityHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
   // Group activities by date
-  const groupedActivities = activityHistory.reduce((acc, activity) => {
+  const groupedActivities = sortedActivities.reduce((acc, activity) => {
     const dateKey = new Date(activity.timestamp).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'numeric',
@@ -110,7 +113,12 @@ function HistoryPage() {
     return acc;
   }, {});
 
-  const sortedDates = Object.keys(groupedActivities).sort((a, b) => new Date(b) - new Date(a));
+  // Sort dates by the timestamp of the first activity in each group (most recent first)
+  const sortedDates = Object.keys(groupedActivities).sort((a, b) => {
+    const timestampA = new Date(groupedActivities[a][0].timestamp);
+    const timestampB = new Date(groupedActivities[b][0].timestamp);
+    return timestampB - timestampA;
+  });
 
   return (
     <main className="relative min-h-screen bg-background">
